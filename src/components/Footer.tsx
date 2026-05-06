@@ -20,7 +20,7 @@ const Footer = () => {
           {/* Company Info */}
           <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Image src="/logo.jpg" alt="Balaji Properties" width={50} height={50} style={{ filter: 'brightness(0) invert(1)' }} />
+              <Image src="/logo.jpg" alt="Balaji Properties" width={50} height={50} style={{ borderRadius: '4px' }} />
               <Typography variant="h6" sx={{ ml: 1, fontWeight: 700 }}>
                 Balaji Properties
               </Typography>

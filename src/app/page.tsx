@@ -3,7 +3,6 @@ import React from 'react';
 import { Box, Container, Typography, Grid, Button, Stack, Paper, Avatar } from '@mui/material';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import SearchBar from '@/components/SearchBar';
 import PropertyCard from '@/components/PropertyCard';
 import { properties } from '@/data/properties';
 import Link from 'next/link';
@@ -49,29 +48,28 @@ const HomePage = () => {
                 Balaji Properties is your trusted partner for buying, selling, and renting premium properties across Pune and PCMC.
               </Typography>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 6 }}>
-                <Button variant="contained" size="large" sx={{ bgcolor: 'warning.main', height: '56px', px: 4, fontSize: '1.1rem' }}>
+                <Button 
+                  component={Link} 
+                  href="/properties" 
+                  variant="contained" 
+                  size="large" 
+                  sx={{ bgcolor: 'warning.main', height: '56px', px: 4, fontSize: '1.1rem' }}
+                >
                   Browse Listings
                 </Button>
-                <Button variant="outlined" size="large" sx={{ color: 'white', borderColor: 'white', height: '56px', px: 4, fontSize: '1.1rem', '&:hover': { borderColor: 'warning.main', color: 'warning.main' } }}>
+                <Button 
+                  component={Link} 
+                  href="/list-property" 
+                  variant="outlined" 
+                  size="large" 
+                  sx={{ color: 'white', borderColor: 'white', height: '56px', px: 4, fontSize: '1.1rem', '&:hover': { borderColor: 'warning.main', color: 'warning.main' } }}
+                >
                   List Your Property
                 </Button>
               </Stack>
             </Grid>
           </Grid>
           
-          {/* Search Bar absolute on desktop, relative on mobile */}
-          <Box sx={{ 
-            mt: { xs: 4, md: 6 },
-            position: { md: 'absolute' },
-            bottom: { md: '-50px' },
-            left: { md: '50%' },
-            transform: { md: 'translateX(-50%)' },
-            width: '100%',
-            maxWidth: '1000px',
-            zIndex: 10
-          }}>
-            <SearchBar />
-          </Box>
         </Container>
       </Box>
 
