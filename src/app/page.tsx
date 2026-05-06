@@ -12,7 +12,9 @@ import {
   HomeWork as HomeWorkIcon, 
   BusinessCenter as BusinessCenterIcon, 
   Gavel as GavelIcon, 
-  MapsHomeWork as MapsHomeWorkIcon 
+  MapsHomeWork as MapsHomeWorkIcon,
+  Description as DescriptionIcon,
+  SupportAgent as SupportAgentIcon
 } from '@mui/icons-material';
 
 const HomePage = () => {
@@ -114,15 +116,16 @@ const HomePage = () => {
 
           <Grid container spacing={4}>
             {[
-              { icon: <HomeWorkIcon fontSize="large" />, title: 'Residential Sales', desc: 'Expert guidance for buying your next home in Pune\'s finest neighborhoods.' },
-              { icon: <MapsHomeWorkIcon fontSize="large" />, title: 'Property Management', desc: 'Peace of mind for owners with our professional rental and maintenance services.' },
-              { icon: <BusinessCenterIcon fontSize="large" />, title: 'Commercial Real Estate', desc: 'Strategic office and retail spaces in Pune\'s growing business hubs.' },
-              { icon: <GavelIcon fontSize="large" />, title: 'Legal & Documentation', desc: 'Seamless assistance with verification and secondary market transactions.' }
+              { icon: <HomeWorkIcon fontSize="large" />, title: 'Residential', desc: 'Expert guidance for buying your next home in Pune\'s finest neighborhoods.' },
+              { icon: <BusinessCenterIcon fontSize="large" />, title: 'Commercial', desc: 'Strategic office and retail spaces in Pune\'s growing business hubs.' },
+              { icon: <DescriptionIcon fontSize="large" />, title: 'Loan & Documentation', desc: 'Hassle-free loan processing and complete documentation support.' },
+              { icon: <GavelIcon fontSize="large" />, title: 'Legal Support', desc: 'Professional legal advice and property title verification services.' },
+              { icon: <MapsHomeWorkIcon fontSize="large" />, title: 'Property Management', desc: 'End-to-end management for your rental properties and maintenance.' }
             ].map((service, index) => (
-              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }} key={index}>
                 <Paper sx={{ p: 4, height: '100%', textAlign: 'center', transition: 'all 0.3s', '&:hover': { transform: 'translateY(-5px)', boxShadow: 10 } }}>
                   <Box sx={{ color: 'warning.main', mb: 2 }}>{service.icon}</Box>
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>{service.title}</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, fontSize: '1.1rem' }}>{service.title}</Typography>
                   <Typography variant="body2" color="text.secondary">{service.desc}</Typography>
                 </Paper>
               </Grid>
@@ -142,11 +145,15 @@ const HomePage = () => {
           <Grid container spacing={3}>
             {[
               { name: 'Rahul Sharma', role: 'Home Buyer', text: 'Balaji Properties helped me find the perfect 3 BHK in Baner. Their market knowledge is exceptional!' },
-              { name: 'Priya Patil', role: 'Property Owner', text: 'I have been using their management services for my flat in Wakad. Highly professional and reliable.' }
+              { name: 'Priya Patil', role: 'Property Owner', text: 'I have been using their management services for my flat in Wakad. Highly professional and reliable.' },
+              { name: 'Amit Deshmukh', role: 'Investor', text: 'Best real estate consultants in Pune. They suggested a great commercial property that gave me excellent returns.' },
+              { name: 'Sneha Kulkarni', role: 'Home Seller', text: 'Selling my property was so easy with Balaji Properties. They handled everything from marketing to legal paperwork.' },
+              { name: 'Vikram Singh', role: 'Tenant', text: 'Found a great rental apartment through them. The process was transparent and quick.' },
+              { name: 'Anjali Joshi', role: 'First-time Buyer', text: 'As a first-time buyer, I was nervous, but their team guided me through every step of the loan and documentation.' }
             ].map((t, index) => (
-              <Grid size={{ xs: 12, md: 6 }} key={index}>
-                <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #eee' }}>
-                  <Typography variant="body1" sx={{ fontStyle: 'italic', mb: 3, fontSize: '1.1rem' }}>"{t.text}"</Typography>
+              <Grid size={{ xs: 12, md: 6, lg: 4 }} key={index}>
+                <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #eee', height: '100%' }}>
+                  <Typography variant="body1" sx={{ fontStyle: 'italic', mb: 3, fontSize: '1rem' }}>"{t.text}"</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Avatar sx={{ bgcolor: 'primary.main' }}>{t.name[0]}</Avatar>
                     <Box>

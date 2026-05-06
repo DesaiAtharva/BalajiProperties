@@ -81,19 +81,19 @@ const Footer = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <LocationOnIcon fontSize="small" sx={{ color: 'warning.main' }} />
                 <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                  Office No. 101, Business Hub, Pune, Maharashtra 411001
+                  s.no 6/2 room no 3356 khori hingne khurd sinhgad road pune city maharshatra 411051
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <PhoneIcon fontSize="small" sx={{ color: 'warning.main' }} />
                 <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                  +91-9130000000
+                  +91-9890468329
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <EmailIcon fontSize="small" sx={{ color: 'warning.main' }} />
                 <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                  info@balajiproperties.com
+                  rushiyede4005@gmail.com
                 </Typography>
               </Box>
             </Box>

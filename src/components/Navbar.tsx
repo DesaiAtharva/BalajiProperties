@@ -1,7 +1,6 @@
-'use client';
 import React, { useState } from 'react';
-import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, MenuItem } from '@mui/material';
-import { Menu as MenuIcon, Phone as PhoneIcon } from '@mui/icons-material';
+import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, MenuItem, Collapse, List, ListItemButton, ListItemText } from '@mui/material';
+import { Menu as MenuIcon, Phone as PhoneIcon, ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon } from '@mui/icons-material';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -13,8 +12,17 @@ const pages = [
   { name: 'Contact', path: '/#contact' },
 ];
 
+const browseOptions = ['Buy', 'Sell', 'Rent'];
+const listOptions = ['Buy', 'Sell', 'Rent'];
+
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElBrowse, setAnchorElBrowse] = useState<null | HTMLElement>(null);
+  const [anchorElList, setAnchorElList] = useState<null | HTMLElement>(null);
+  
+  // Mobile sub-menu states
+  const [mobileBrowseOpen, setMobileBrowseOpen] = useState(false);
+  const [mobileListOpen, setMobileListOpen] = useState(false);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -22,6 +30,24 @@ const Navbar = () => {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+    setMobileBrowseOpen(false);
+    setMobileListOpen(false);
+  };
+
+  const handleOpenBrowseMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElBrowse(event.currentTarget);
+  };
+
+  const handleCloseBrowseMenu = () => {
+    setAnchorElBrowse(null);
+  };
+
+  const handleOpenListMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElList(event.currentTarget);
+  };
+
+  const handleCloseListMenu = () => {
+    setAnchorElList(null);
   };
 
   return (
@@ -76,10 +102,47 @@ const Navbar = () => {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {pages.map((page) => (
+              {/* Home */}
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Link href="/" style={{ width: '100%' }}>
+                  <Typography sx={{ textAlign: 'left' }}>Home</Typography>
+                </Link>
+              </MenuItem>
+
+              {/* Mobile Browse Dropdown */}
+              <MenuItem onClick={() => setMobileBrowseOpen(!mobileBrowseOpen)} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography>Browse</Typography>
+                {mobileBrowseOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </MenuItem>
+              <Collapse in={mobileBrowseOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {browseOptions.map((option) => (
+                    <ListItemButton key={option} sx={{ pl: 4 }} onClick={handleCloseNavMenu} component={Link} href={`/properties?type=${option.toLowerCase()}`}>
+                      <ListItemText primary={option} />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Collapse>
+
+              {/* Mobile List Dropdown */}
+              <MenuItem onClick={() => setMobileListOpen(!mobileListOpen)} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography>List</Typography>
+                {mobileListOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </MenuItem>
+              <Collapse in={mobileListOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {listOptions.map((option) => (
+                    <ListItemButton key={option} sx={{ pl: 4 }} onClick={handleCloseNavMenu} component={Link} href="/#contact">
+                      <ListItemText primary={option} />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Collapse>
+
+              {pages.slice(1).map((page) => (
                 <MenuItem key={page.name} onClick={handleCloseNavMenu}>
                   <Link href={page.path} style={{ width: '100%' }}>
-                    <Typography sx={{ textAlign: 'center' }}>{page.name}</Typography>
+                    <Typography sx={{ textAlign: 'left' }}>{page.name}</Typography>
                   </Link>
                 </MenuItem>
               ))}
@@ -105,13 +168,56 @@ const Navbar = () => {
           </Box>
 
           {/* Desktop Links */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
-            {pages.map((page) => (
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', alignItems: 'center' }}>
+            <Button component={Link} href="/" sx={{ my: 2, color: 'primary.main', display: 'block', mx: 1, fontWeight: 500 }}>
+              Home
+            </Button>
+
+            {/* Browse Dropdown */}
+            <Button
+              onClick={handleOpenBrowseMenu}
+              endIcon={<ExpandMoreIcon />}
+              sx={{ my: 2, color: 'primary.main', display: 'flex', mx: 1, fontWeight: 500 }}
+            >
+              Browse
+            </Button>
+            <Menu
+              anchorEl={anchorElBrowse}
+              open={Boolean(anchorElBrowse)}
+              onClose={handleCloseBrowseMenu}
+            >
+              {browseOptions.map((option) => (
+                <MenuItem key={option} onClick={handleCloseBrowseMenu} component={Link} href={`/properties?type=${option.toLowerCase()}`}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Menu>
+
+            {/* List Dropdown */}
+            <Button
+              onClick={handleOpenListMenu}
+              endIcon={<ExpandMoreIcon />}
+              sx={{ my: 2, color: 'primary.main', display: 'flex', mx: 1, fontWeight: 500 }}
+            >
+              List
+            </Button>
+            <Menu
+              anchorEl={anchorElList}
+              open={Boolean(anchorElList)}
+              onClose={handleCloseListMenu}
+            >
+              {listOptions.map((option) => (
+                <MenuItem key={option} onClick={handleCloseListMenu} component={Link} href="/#contact">
+                  {option}
+                </MenuItem>
+              ))}
+            </Menu>
+
+            {pages.slice(1).map((page) => (
               <Button
                 key={page.name}
                 component={Link}
                 href={page.path}
-                onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'primary.main', display: 'block', mx: 1, fontWeight: 500 }}
               >
                 {page.name}
@@ -124,15 +230,21 @@ const Navbar = () => {
             <Button
               variant="contained"
               startIcon={<PhoneIcon />}
+              component="a"
+              href="tel:9890468329"
               sx={{ 
                 backgroundColor: 'warning.main', 
                 '&:hover': { backgroundColor: '#B89240' },
                 display: { xs: 'none', sm: 'flex' }
               }}
             >
-              9130000000
+              9890468329
             </Button>
-            <IconButton sx={{ display: { xs: 'flex', sm: 'none' }, color: 'warning.main' }}>
+            <IconButton 
+              component="a" 
+              href="tel:9890468329"
+              sx={{ display: { xs: 'flex', sm: 'none' }, color: 'warning.main' }}
+            >
               <PhoneIcon />
             </IconButton>
           </Box>
