@@ -132,6 +132,89 @@ const HomePage = () => {
         </Container>
       </Box>
 
+      {/* Why Choose Us Section */}
+      <Box sx={{ py: 12, bgcolor: 'primary.main', color: 'white' }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={6} sx={{ alignItems: 'center' }}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Typography 
+                variant="h2" 
+                sx={{ 
+                  fontWeight: 800, 
+                  mb: 3, 
+                  fontSize: { xs: '2.5rem', md: '3.5rem' }, 
+                  lineHeight: 1.2,
+                  textAlign: 'left'
+                }}
+              >
+                Why Choose <br />
+                <Box component="span" sx={{ color: 'warning.main' }}>Balaji Properties</Box>?
+              </Typography>
+              <Typography variant="body1" sx={{ opacity: 0.9, mb: 4, fontSize: '1.1rem', lineHeight: 1.8 }}>
+                With over a decade of experience in Pune's real estate market, we have built a reputation for trust, transparency, and excellence. We don't just find you a house; we find you a home.
+              </Typography>
+              
+              <Stack spacing={3}>
+                {[
+                  { title: 'Market Expertise', desc: 'Deep knowledge of Pune and PCMC localities and price trends.' },
+                  { title: 'Transparent Process', desc: 'Clear documentation and no hidden costs in any transaction.' },
+                  { title: 'End-to-End Support', desc: 'From site visits to legal registration and home loan assistance.' }
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ 
+                      width: 40, 
+                      height: 40, 
+                      borderRadius: '50%', 
+                      bgcolor: 'warning.main', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <Typography sx={{ fontWeight: 800, color: 'primary.main' }}>{i + 1}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>{item.title}</Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.8 }}>{item.desc}</Typography>
+                    </Box>
+                  </Box>
+                ))}
+              </Stack>
+            </Grid>
+            
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Grid container spacing={2}>
+                {[
+                  { label: 'Years Experience', value: '10+' },
+                  { label: 'Properties Sold', value: '500+' },
+                  { label: 'Happy Families', value: '1000+' },
+                  { label: 'Verified Listings', value: '250+' }
+                ].map((stat, i) => (
+                  <Grid size={{ xs: 6 }} key={i}>
+                    <Paper sx={{ 
+                      p: 4, 
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      textAlign: 'center', 
+                      bgcolor: 'rgba(255,255,255,0.05)', 
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: 'white',
+                      minHeight: '160px'
+                    }}>
+                      <Typography variant="h3" sx={{ fontWeight: 800, color: 'warning.main', mb: 1, fontSize: { xs: '2rem', md: '2.5rem' } }}>{stat.value}</Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>{stat.label}</Typography>
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
       {/* Testimonials */}
       <Box sx={{ py: 10, bgcolor: 'background.default' }}>
         <Container maxWidth="lg">

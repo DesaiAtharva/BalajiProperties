@@ -10,6 +10,15 @@ const PropertyFilters = () => {
       </Typography>
 
       <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>Purpose</Typography>
+        <TextField select fullWidth size="small" defaultValue="All">
+          <MenuItem value="All">All Properties</MenuItem>
+          <MenuItem value="Buy">Buy (For Sale)</MenuItem>
+          <MenuItem value="Rent">Rent (For Lease)</MenuItem>
+        </TextField>
+      </Box>
+
+      <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>Location</Typography>
         <TextField select fullWidth size="small" defaultValue="All">
           <MenuItem value="All">All Areas</MenuItem>
