@@ -30,10 +30,15 @@ const PropertyCard = ({ property }: { property: Property }) => {
   const getImageUrl = (url: string | null) => {
     if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
     
-    // Handle nested external URLs
+    // Handle nested external URLs (e.g. /media/https%3A/...)
     if (url.includes('http')) {
       const startIndex = url.indexOf('http');
-      return decodeURIComponent(url.substring(startIndex));
+      let decoded = decodeURIComponent(url.substring(startIndex));
+      // Fix double slash if it was lost during encoding/decoding
+      if (decoded.startsWith('https:/') && !decoded.startsWith('https://')) {
+        decoded = decoded.replace('https:/', 'https://');
+      }
+      return decoded;
     }
     
     // Relative paths

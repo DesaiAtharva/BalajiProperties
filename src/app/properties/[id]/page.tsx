@@ -95,7 +95,11 @@ const PropertyDetailPage = () => {
                   if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
                   if (url.includes('http')) {
                     const startIndex = url.indexOf('http');
-                    return decodeURIComponent(url.substring(startIndex));
+                    let decoded = decodeURIComponent(url.substring(startIndex));
+                    if (decoded.startsWith('https:/') && !decoded.startsWith('https://')) {
+                      decoded = decoded.replace('https:/', 'https://');
+                    }
+                    return decoded;
                   }
                   return `https://balajiproperties-backend.onrender.com${url}`;
                 })()} 
