@@ -30,19 +30,19 @@ const PropertyCard = ({ property }: { property: Property }) => {
   const getImageUrl = (url: string | null) => {
     if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
     
-    // PRECISION FIX: If the backend prepended /media/ to an external link
-    if (url.startsWith('/media/http')) {
-      return decodeURIComponent(url.substring(7)).replace('https:/', 'https://').replace('http:/', 'http://');
-    }
-
-    // Check for web links anywhere else
-    const httpIndex = url.indexOf('http');
-    if (httpIndex !== -1) {
-      let realUrl = decodeURIComponent(url.substring(httpIndex));
-      return realUrl.replace('https:/', 'https://').replace('http:/', 'http://').replace('https:///','https://');
+    // If the URL contains 'http' multiple times or is nested
+    const lastHttpIndex = url.lastIndexOf('http');
+    if (lastHttpIndex !== -1 && lastHttpIndex > 0) {
+      // It's a nested URL, take only the last part
+      let realUrl = decodeURIComponent(url.substring(lastHttpIndex));
+      return realUrl.replace(/https:\/+(?!\/)/g, 'https://').replace(/http:\/+(?!\/)/g, 'http://');
     }
     
-    return `https://balajiproperties-backend.onrender.com${url}`;
+    // If it's already a clean external URL
+    if (url.startsWith('http')) return url;
+
+    // Normal uploaded files from backend
+    return `https://balajiproperties-backend.onrender.com${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
   return (

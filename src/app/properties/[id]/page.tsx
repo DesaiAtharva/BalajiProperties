@@ -94,17 +94,14 @@ const PropertyDetailPage = () => {
                   const url = property.main_image;
                   if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
                   
-                  // Precision Fix for /media/http
-                  if (url.startsWith('/media/http')) {
-                    return decodeURIComponent(url.substring(7)).replace('https:/', 'https://').replace('http:/', 'http://');
+                  const lastHttpIndex = url.lastIndexOf('http');
+                  if (lastHttpIndex !== -1 && lastHttpIndex > 0) {
+                    let realUrl = decodeURIComponent(url.substring(lastHttpIndex));
+                    return realUrl.replace(/https:\/+(?!\/)/g, 'https://').replace(/http:\/+(?!\/)/g, 'http://');
                   }
-
-                  const httpIndex = url.indexOf('http');
-                  if (httpIndex !== -1) {
-                    let realUrl = decodeURIComponent(url.substring(httpIndex));
-                    return realUrl.replace('https:/', 'https://').replace('http:/', 'http://').replace('https:///','https://');
-                  }
-                  return `https://balajiproperties-backend.onrender.com${url}`;
+                  
+                  if (url.startsWith('http')) return url;
+                  return `https://balajiproperties-backend.onrender.com${url.startsWith('/') ? '' : '/'}${url}`;
                 })()} 
                 alt={property.title} 
                 style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '500px', objectFit: 'cover' }} 
