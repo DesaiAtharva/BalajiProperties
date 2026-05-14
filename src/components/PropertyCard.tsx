@@ -30,18 +30,17 @@ const PropertyCard = ({ property }: { property: Property }) => {
   const getImageUrl = (url: string | null) => {
     if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
     
-    // 1. Handle nested external URLs (Fix for seeded data)
-    const httpIndex = url.indexOf('http');
-    if (httpIndex !== -1) {
-      let realUrl = decodeURIComponent(url.substring(httpIndex));
+    // 1. Handle nested external URLs (If the backend prepended /media/)
+    const lastHttpIndex = url.lastIndexOf('http');
+    if (lastHttpIndex > 0) {
+      let realUrl = decodeURIComponent(url.substring(lastHttpIndex));
       return realUrl.replace(/https:\/+(?!\/)/g, 'https://').replace(/http:\/+(?!\/)/g, 'http://');
     }
 
-    // 2. If it's already a clean Cloudinary URL (starts with http)
+    // 2. If it's already a clean URL (external or cloud storage)
     if (url.startsWith('http')) return url;
 
-    // 3. If it's a relative path (like /media/property_images/...)
-    // Prepend the backend URL so Vercel can find the file on Render
+    // 3. For relative paths (uploaded to local backend)
     const baseUrl = 'https://balajiproperties-backend.onrender.com';
     return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   };
