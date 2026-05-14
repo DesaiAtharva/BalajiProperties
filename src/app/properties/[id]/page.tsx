@@ -93,13 +93,10 @@ const PropertyDetailPage = () => {
                 src={(() => {
                   const url = property.main_image;
                   if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
-                  if (url.includes('http')) {
-                    const startIndex = url.indexOf('http');
-                    let decoded = decodeURIComponent(url.substring(startIndex));
-                    if (decoded.startsWith('https:/') && !decoded.startsWith('https://')) {
-                      decoded = decoded.replace('https:/', 'https://');
-                    }
-                    return decoded;
+                  const httpIndex = url.indexOf('http');
+                  if (httpIndex !== -1) {
+                    let realUrl = decodeURIComponent(url.substring(httpIndex));
+                    return realUrl.replace('https:/', 'https://').replace('http:/', 'http://').replace('https:///','https://');
                   }
                   return `https://balajiproperties-backend.onrender.com${url}`;
                 })()} 
