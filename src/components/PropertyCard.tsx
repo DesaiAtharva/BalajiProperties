@@ -30,19 +30,20 @@ const PropertyCard = ({ property }: { property: Property }) => {
   const getImageUrl = (url: string | null) => {
     if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
     
-    // If the URL contains 'http' multiple times or is nested
-    const lastHttpIndex = url.lastIndexOf('http');
-    if (lastHttpIndex !== -1 && lastHttpIndex > 0) {
-      // It's a nested URL, take only the last part
-      let realUrl = decodeURIComponent(url.substring(lastHttpIndex));
+    // 1. Handle nested external URLs (Fix for seeded data)
+    const httpIndex = url.indexOf('http');
+    if (httpIndex !== -1) {
+      let realUrl = decodeURIComponent(url.substring(httpIndex));
       return realUrl.replace(/https:\/+(?!\/)/g, 'https://').replace(/http:\/+(?!\/)/g, 'http://');
     }
-    
-    // If it's already a clean external URL
+
+    // 2. If it's already a clean Cloudinary URL (starts with http)
     if (url.startsWith('http')) return url;
 
-    // Normal uploaded files from backend
-    return `https://balajiproperties-backend.onrender.com${url.startsWith('/') ? '' : '/'}${url}`;
+    // 3. If it's a relative path (like /media/property_images/...)
+    // Prepend the backend URL so Vercel can find the file on Render
+    const baseUrl = 'https://balajiproperties-backend.onrender.com';
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
   return (

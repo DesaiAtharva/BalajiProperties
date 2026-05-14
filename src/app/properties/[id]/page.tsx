@@ -94,13 +94,17 @@ const PropertyDetailPage = () => {
                   const url = property.main_image;
                   if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
                   
-                  const lastHttpIndex = url.lastIndexOf('http');
-                  if (lastHttpIndex !== -1 && lastHttpIndex > 0) {
-                    let realUrl = decodeURIComponent(url.substring(lastHttpIndex));
+                  // 1. Handle nested external URLs
+                  const httpIndex = url.indexOf('http');
+                  if (httpIndex !== -1) {
+                    let realUrl = decodeURIComponent(url.substring(httpIndex));
                     return realUrl.replace(/https:\/+(?!\/)/g, 'https://').replace(/http:\/+(?!\/)/g, 'http://');
                   }
                   
+                  // 2. Direct Web Links
                   if (url.startsWith('http')) return url;
+
+                  // 3. Relative Paths
                   return `https://balajiproperties-backend.onrender.com${url.startsWith('/') ? '' : '/'}${url}`;
                 })()} 
                 alt={property.title} 
