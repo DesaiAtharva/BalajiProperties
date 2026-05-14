@@ -105,7 +105,7 @@ const ListPropertyPage = () => {
         setFileName(null);
         formElement.reset();
       } else {
-        setError(result.message || 'Failed to list property. Please try again.');
+        setError(result.error || 'Failed to list property. Please try again.');
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');
