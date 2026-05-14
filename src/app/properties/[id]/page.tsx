@@ -90,7 +90,12 @@ const PropertyDetailPage = () => {
             {/* Gallery placeholder */}
             <Box sx={{ borderRadius: 4, overflow: 'hidden', mb: 6, boxShadow: 10 }}>
               <img 
-                src={property.main_image || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800'} 
+                src={(() => {
+                  const url = property.main_image;
+                  if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
+                  if (url.startsWith('http')) return url;
+                  return `https://balajiproperties-backend.onrender.com${url}`;
+                })()} 
                 alt={property.title} 
                 style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '500px', objectFit: 'cover' }} 
               />

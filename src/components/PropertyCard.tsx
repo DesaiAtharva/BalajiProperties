@@ -27,6 +27,13 @@ export type Property = {
 };
 
 const PropertyCard = ({ property }: { property: Property }) => {
+  const getImageUrl = (url: string | null) => {
+    if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
+    if (url.startsWith('http')) return url;
+    // If it's a relative path from the backend
+    return `https://balajiproperties-backend.onrender.com${url}`;
+  };
+
   return (
     <Card 
       sx={{ 
@@ -45,7 +52,7 @@ const PropertyCard = ({ property }: { property: Property }) => {
         <CardMedia
           component="img"
           height="220"
-          image={property.main_image || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800'}
+          image={getImageUrl(property.main_image)}
           alt={property.title}
         />
         <Chip 
