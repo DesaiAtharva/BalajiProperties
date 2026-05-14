@@ -93,7 +93,10 @@ const PropertyDetailPage = () => {
                 src={(() => {
                   const url = property.main_image;
                   if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
-                  if (url.startsWith('http')) return url;
+                  if (url.includes('http')) {
+                    const startIndex = url.indexOf('http');
+                    return decodeURIComponent(url.substring(startIndex));
+                  }
                   return `https://balajiproperties-backend.onrender.com${url}`;
                 })()} 
                 alt={property.title} 

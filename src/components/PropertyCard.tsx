@@ -29,8 +29,14 @@ export type Property = {
 const PropertyCard = ({ property }: { property: Property }) => {
   const getImageUrl = (url: string | null) => {
     if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
-    if (url.startsWith('http')) return url;
-    // If it's a relative path from the backend
+    
+    // Handle nested external URLs
+    if (url.includes('http')) {
+      const startIndex = url.indexOf('http');
+      return decodeURIComponent(url.substring(startIndex));
+    }
+    
+    // Relative paths
     return `https://balajiproperties-backend.onrender.com${url}`;
   };
 
