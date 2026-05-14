@@ -17,12 +17,11 @@
 /.next/
 /out/
 
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
+# Backend
+backend/
+backend/**
+**/db.sqlite3
+**/__pycache__
 
 # debug
 npm-debug.log*

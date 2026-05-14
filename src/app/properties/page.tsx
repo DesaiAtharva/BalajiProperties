@@ -5,24 +5,34 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import PropertyFilters from '@/components/PropertyFilters';
-import { properties as staticProperties } from '@/data/properties';
 import { getProperties } from '@/app/actions/property';
 import Link from 'next/link';
 import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
 
 const PropertyListingPage = () => {
-  const [allProperties, setAllProperties] = React.useState(staticProperties);
+  const [allProperties, setAllProperties] = React.useState<any[]>([]);
+  const [filters, setFilters] = React.useState({});
+  const [loading, setLoading] = React.useState(true);
+
+  const fetchProperties = async (currentFilters = {}) => {
+    setLoading(true);
+    const dynamicProperties = await getProperties(currentFilters);
+    setAllProperties(dynamicProperties);
+    setLoading(false);
+  };
 
   React.useEffect(() => {
-    const fetchNewProperties = async () => {
-      const dynamicProperties = await getProperties();
-      if (dynamicProperties.length > 0) {
-        // Merge and avoid duplicates by ID if necessary, but here we just append
-        setAllProperties([...staticProperties, ...dynamicProperties]);
-      }
-    };
-    fetchNewProperties();
-  }, []);
+    fetchProperties(filters);
+  }, [filters]);
+
+  const handleFilterChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
+
+  const handleReset = () => {
+    setFilters({});
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#F5F7F9' }}>
       <Navbar />
@@ -45,31 +55,36 @@ const PropertyListingPage = () => {
             Properties in Pune & PCMC
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Showing {allProperties.length} properties matching your search.
+            {loading ? 'Searching...' : `Showing ${allProperties.length} properties matching your search.`}
           </Typography>
         </Box>
 
         <Grid container spacing={4}>
           {/* Filters Sidebar */}
           <Grid size={{ xs: 12, md: 3 }}>
-            <PropertyFilters />
+            <PropertyFilters onFilterChange={handleFilterChange} onReset={handleReset} />
           </Grid>
 
           {/* Listings Grid */}
           <Grid size={{ xs: 12, md: 9 }}>
-            <Grid container spacing={3}>
-              {allProperties.map((property) => (
-                <Grid size={{ xs: 12, sm: 6 }} key={property.id}>
-                  <PropertyCard property={property} />
-                </Grid>
-              ))}
-            </Grid>
-            
-            {/* Show more / Pagination could go here */}
-            {allProperties.length === 0 && (
+            {loading ? (
               <Box sx={{ textAlign: 'center', py: 10 }}>
-                <Typography variant="h6">No properties found matching your criteria.</Typography>
+                <Typography variant="h6">Loading properties...</Typography>
               </Box>
+            ) : (
+              <Grid container spacing={3}>
+                {allProperties.map((property) => (
+                  <Grid size={{ xs: 12, sm: 6 }} key={property.id}>
+                    <PropertyCard property={property} />
+                  </Grid>
+                ))}
+                
+                {allProperties.length === 0 && (
+                  <Box sx={{ textAlign: 'center', py: 10, width: '100%' }}>
+                    <Typography variant="h6">No properties found matching your criteria.</Typography>
+                  </Box>
+                )}
+              </Grid>
             )}
           </Grid>
         </Grid>

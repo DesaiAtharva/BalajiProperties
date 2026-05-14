@@ -4,9 +4,9 @@ import { Box, Container, Typography, Grid, Breadcrumbs, Link as MuiLink, Paper, 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
-import { properties } from '@/data/properties';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { getProperties } from '@/app/actions/property';
 import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
 
 const AreaSEOPage = () => {
@@ -14,10 +14,19 @@ const AreaSEOPage = () => {
   const slug = params.slug as string;
   const areaName = slug.charAt(0).toUpperCase() + slug.slice(1);
   
-  const filteredProperties = properties.filter(p => 
-    p.location.toLowerCase() === slug.toLowerCase() || 
-    p.area.toLowerCase() === slug.toLowerCase()
-  );
+  const [filteredProperties, setFilteredProperties] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchByArea = async () => {
+      // Area in Django is either 'Pune' or 'PCMC' or the specific location
+      // We try fetching by area first
+      const data = await getProperties({ area: areaName });
+      setFilteredProperties(data);
+      setLoading(false);
+    };
+    fetchByArea();
+  }, [areaName]);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#F5F7F9' }}>
@@ -48,17 +57,17 @@ const AreaSEOPage = () => {
         </Box>
 
         <Typography variant="h5" sx={{ fontWeight: 700, mb: 4 }}>
-          {filteredProperties.length} Listings found in {areaName}
+          {loading ? 'Searching for listings...' : `${filteredProperties.length} Listings found in ${areaName}`}
         </Typography>
 
         <Grid container spacing={4}>
-          {filteredProperties.length > 0 ? (
+          {!loading && filteredProperties.length > 0 ? (
             filteredProperties.map((property) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={property.id}>
                 <PropertyCard property={property} />
               </Grid>
             ))
-          ) : (
+          ) : !loading ? (
             <Grid size={12}>
               <Paper sx={{ p: 10, textAlign: 'center', borderRadius: 4 }}>
                 <Typography variant="h6" color="text.secondary">

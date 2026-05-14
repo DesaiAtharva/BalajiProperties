@@ -1,71 +1,135 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { Property } from '@/components/PropertyCard';
 
-// This is a temporary in-memory store for demonstration.
-// IN PRODUCTION: Use Vercel Postgres or another database.
-// To use Vercel Postgres:
-// 1. Run: npm install @vercel/postgres
-// 2. Uncomment the database code below and configure your .env
-/*
-import { sql } from '@vercel/postgres';
+const DJANGO_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://balajiproperties-backend.onrender.com';
 
-export async function createProperty(data: any) {
-  try {
-    await sql`
-      INSERT INTO properties (title, price, location, area, type, bhk, bathrooms, sqft, image, status)
-      VALUES (${data.title}, ${data.price}, ${data.location}, ${data.area}, ${data.type}, ${data.bhk}, ${data.bathrooms}, ${data.sqft}, ${data.image}, ${data.status})
-    `;
-    revalidatePath('/properties');
-    return { success: true };
-  } catch (error) {
-    console.error('Database Error:', error);
-    return { error: 'Failed to create property' };
-  }
+function parsePrice(priceStr: string): number {
+    if (!priceStr) return 0;
+    // Extract number
+    const numbers = priceStr.replace(',', '').match(/[-+]?\d*\.\d+|\d+/);
+    if (!numbers) return 0;
+    const val = parseFloat(numbers[0]);
+    
+    if (priceStr.includes('Cr')) {
+        return val * 10000000;
+    } else if (priceStr.includes('L')) {
+        return val * 100000;
+    }
+    return val;
 }
-*/
-
-// Mocked storage for now (will only persist in the same server instance)
-let mockProperties: Property[] = [];
 
 export async function addProperty(formData: FormData) {
-  const imageFile = formData.get('image') as File;
-  let imageBase64 = '';
+    try {
+        console.log('--- Property Submission Started ---');
+        
+        // 1. Map fields to match Django model
+        const image = formData.get('image');
+        if (image && image instanceof File) {
+            console.log('Processing image:', image.name, 'Size:', image.size);
+            formData.append('main_image', image);
+            formData.delete('image');
+        }
 
-  if (imageFile && imageFile.size > 0) {
-    const bytes = await imageFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    imageBase64 = `data:${imageFile.type};base64,${buffer.toString('base64')}`;
-  }
+        const priceStr = formData.get('price_display') as string;
+        const priceAmount = parsePrice(priceStr);
+        console.log('Price Parsed:', priceStr, '=>', priceAmount);
+        formData.append('price_amount', priceAmount.toString());
+        
+        const type = formData.get('type') as string;
+        if (type) {
+            formData.append('property_type', type);
+        }
 
-  const data: Property = {
-    id: Math.random().toString(36).substr(2, 9),
-    title: formData.get('title') as string,
-    price: formData.get('price') as string,
-    location: formData.get('location') as string,
-    area: formData.get('area') as string,
-    type: formData.get('type') as string,
-    bhk: parseInt(formData.get('bhk') as string),
-    bathrooms: parseInt(formData.get('bathrooms') as string),
-    sqft: parseInt(formData.get('sqft') as string),
-    image: imageBase64 || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800',
-    status: formData.get('status') as 'For Sale' | 'For Rent',
-    featured: false,
-  };
+        // 3. Handle Amenities (Checkboxes are 'on' or missing)
+        const amenities = ['has_parking', 'has_lift', 'has_power_backup', 'has_gym', 'has_security', 'has_swimming_pool'];
+        amenities.forEach(key => {
+            const val = formData.get(key);
+            formData.set(key, val === 'on' ? 'true' : 'false');
+        });
 
-  console.log('Adding property with image size:', imageFile?.size);
-  
-  mockProperties.push(data);
-  
-  revalidatePath('/properties');
-  revalidatePath('/');
-  
-  return { success: true };
+        console.log('Forwarding request to Django:', `${DJANGO_API_URL}/api/properties/submit/`);
+
+        const response = await fetch(`${DJANGO_API_URL}/api/properties/submit/`, {
+            method: 'POST',
+            body: formData,
+            // Next.js fetch options for handling larger payloads
+            cache: 'no-store',
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Django Error Response:', errorText);
+            return { success: false, error: 'The server rejected the data. Please check all fields.' };
+        }
+
+        console.log('Property listed successfully!');
+        revalidatePath('/properties');
+        revalidatePath('/');
+        
+        return { success: true };
+    } catch (error: any) {
+        console.error('Fatal Submission Error:', error.message);
+        if (error.message.includes('fetch')) {
+            return { success: false, error: 'Connection to backend failed. Please try a smaller image.' };
+        }
+        return { success: false, error: 'Something went wrong during upload. Please try again.' };
+    }
 }
 
-// Function to get properties (merging static and dynamic)
-export async function getProperties() {
-  // In a real app, this would fetch from the database
-  // return [...staticProperties, ...databaseProperties];
-  return mockProperties;
+export async function getProperties(filters: { area?: string; type?: string; status?: string; bhk?: string; min_price?: string; max_price?: string } = {}) {
+    try {
+        const queryParams = new URLSearchParams();
+        if (filters.area) queryParams.append('area', filters.area);
+        if (filters.type) queryParams.append('type', filters.type);
+        if (filters.status) queryParams.append('status', filters.status);
+        if (filters.bhk) queryParams.append('bhk', filters.bhk);
+        if (filters.min_price) queryParams.append('min_price', filters.min_price);
+        if (filters.max_price) queryParams.append('max_price', filters.max_price);
+
+        const url = `${DJANGO_API_URL}/api/properties/?${queryParams.toString()}`;
+        const response = await fetch(url, { cache: 'no-store' });
+        
+        if (!response.ok) return [];
+        
+        const data = await response.json();
+        return data.results || data;
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        return [];
+    }
+}
+
+export async function getPropertyById(id: string) {
+    try {
+        const response = await fetch(`${DJANGO_API_URL}/api/properties/${id}/`, {
+            cache: 'no-store'
+        });
+        if (!response.ok) return null;
+        return await response.json();
+    } catch (error) {
+        return null;
+    }
+}
+
+export async function addInquiry(formData: FormData) {
+    try {
+        console.log('--- Sending Inquiry ---');
+        console.log('DEBUG: Target Backend URL is:', DJANGO_API_URL);
+        const response = await fetch(`${DJANGO_API_URL}/api/inquiries/submit/`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Django Inquiry Error:', errorText);
+            return { success: false, message: 'Failed to send inquiry. Please check your details.' };
+        }
+
+        console.log('Inquiry sent successfully!');
+        return { success: true };
+    } catch (error: any) {
+        console.error('Inquiry Connection Error:', error.message);
+        return { success: false, message: 'Something went wrong. Please check your internet.' };
+    }
 }

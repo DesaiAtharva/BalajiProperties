@@ -4,7 +4,7 @@ import { Box, Container, Grid, Typography, Stack, Chip, Divider, List, ListItem,
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import InquiryForm from '@/components/InquiryForm';
-import { properties } from '@/data/properties';
+import { getPropertyById } from '@/app/actions/property';
 import { useParams } from 'next/navigation';
 import { 
   CheckCircleOutlined as CheckCircleOutlineIcon, 
@@ -17,7 +17,31 @@ import Image from 'next/image';
 
 const PropertyDetailPage = () => {
   const params = useParams();
-  const property = properties.find((p) => p.id === params.id);
+  const [property, setProperty] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchProperty = async () => {
+      if (params.id) {
+        const data = await getPropertyById(params.id as string);
+        setProperty(data);
+      }
+      setLoading(false);
+    };
+    fetchProperty();
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Navbar />
+        <Container sx={{ py: 10, textAlign: 'center' }}>
+          <Typography variant="h4">Loading...</Typography>
+        </Container>
+        <Footer />
+      </Box>
+    );
+  }
 
   if (!property) {
     return (
@@ -52,8 +76,8 @@ const PropertyDetailPage = () => {
               </Box>
             </Box>
             <Box sx={{ textAlign: { md: 'right' } }}>
-              <Typography variant="h3" sx={{ fontWeight: 800, color: 'warning.main' }}>{property.price}</Typography>
-              <Typography variant="subtitle1" sx={{ opacity: 0.8 }}>Ready to Move</Typography>
+              <Typography variant="h3" sx={{ fontWeight: 800, color: 'warning.main' }}>{property.price_display}</Typography>
+              <Typography variant="subtitle1" sx={{ opacity: 0.8 }}>{property.property_age || 'Ready to Move'}</Typography>
             </Box>
           </Stack>
         </Container>
@@ -66,7 +90,7 @@ const PropertyDetailPage = () => {
             {/* Gallery placeholder */}
             <Box sx={{ borderRadius: 4, overflow: 'hidden', mb: 6, boxShadow: 10 }}>
               <img 
-                src={property.image} 
+                src={property.main_image || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800'} 
                 alt={property.title} 
                 style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '500px', objectFit: 'cover' }} 
               />
@@ -93,9 +117,9 @@ const PropertyDetailPage = () => {
             {/* Description */}
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>Property Description</Typography>
             <Typography variant="body1" sx={{ mb: 6, lineHeight: 1.8, color: 'text.secondary' }}>
-              Experience luxury living in this premium {property.title} located in the heart of {property.location}. 
+              {property.description || `Experience luxury living in this premium ${property.title} located in the heart of ${property.location}. 
               This property features modern architecture, high-quality finishes, and ample natural light. 
-              The spacious layout is designed for comfort and functionality, making it perfect for families seeking a modern lifestyle.
+              The spacious layout is designed for comfort and functionality, making it perfect for families seeking a modern lifestyle.`}
               <br /><br />
               Located in one of Pune's most desirable neighborhoods, you'll have easy access to top schools, hospitals, 
               shopping malls, and IT parks. The community offers top-notch amenities ensuring a secure and luxurious environment.
@@ -117,9 +141,8 @@ const PropertyDetailPage = () => {
             </Grid>
           </Grid>
 
-          {/* Sidebar Inquiry */}
           <Grid size={{ xs: 12, md: 4 }}>
-            <InquiryForm propertyTitle={property.title} />
+            <InquiryForm propertyTitle={property.title} propertyId={property.id} />
           </Grid>
         </Grid>
       </Container>

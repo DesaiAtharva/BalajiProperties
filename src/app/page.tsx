@@ -4,32 +4,40 @@ import { Box, Container, Typography, Grid, Button, Stack, Paper, Avatar } from '
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
-import { properties } from '@/data/properties';
+import { getProperties } from '@/app/actions/property';
 import Link from 'next/link';
-import { 
-  WhatsApp as WhatsAppIcon, 
-  HomeWork as HomeWorkIcon, 
-  BusinessCenter as BusinessCenterIcon, 
-  Gavel as GavelIcon, 
+import {
+  WhatsApp as WhatsAppIcon,
+  HomeWork as HomeWorkIcon,
+  BusinessCenter as BusinessCenterIcon,
+  Gavel as GavelIcon,
   MapsHomeWork as MapsHomeWorkIcon,
   Description as DescriptionIcon,
   SupportAgent as SupportAgentIcon
 } from '@mui/icons-material';
 
 const HomePage = () => {
-  const featuredProperties = properties.filter(p => p.featured);
+  const [featuredProperties, setFeaturedProperties] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchFeatured = async () => {
+      const data = await getProperties();
+      setFeaturedProperties(data.filter((p: any) => p.is_featured));
+    };
+    fetchFeatured();
+  }, []);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
-      
+
       {/* Hero Section */}
-      <Box 
-        sx={{ 
-          position: 'relative', 
+      <Box
+        sx={{
+          position: 'relative',
           height: { xs: 'auto', md: '85vh' },
           minHeight: '600px',
-          display: 'flex', 
+          display: 'flex',
           alignItems: 'center',
           py: { xs: 8, md: 0 },
           backgroundImage: 'linear-gradient(rgba(47, 72, 88, 0.7), rgba(47, 72, 88, 0.7)), url("https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1600")',
@@ -48,20 +56,20 @@ const HomePage = () => {
                 Balaji Properties is your trusted partner for buying, selling, and renting premium properties across Pune and PCMC.
               </Typography>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 6 }}>
-                <Button 
-                  component={Link} 
-                  href="/properties" 
-                  variant="contained" 
-                  size="large" 
+                <Button
+                  component={Link}
+                  href="/properties"
+                  variant="contained"
+                  size="large"
                   sx={{ bgcolor: 'warning.main', height: '56px', px: 4, fontSize: '1.1rem' }}
                 >
                   Browse Listings
                 </Button>
-                <Button 
-                  component={Link} 
-                  href="/list-property" 
-                  variant="outlined" 
-                  size="large" 
+                <Button
+                  component={Link}
+                  href="/list-property"
+                  variant="outlined"
+                  size="large"
                   sx={{ color: 'white', borderColor: 'white', height: '56px', px: 4, fontSize: '1.1rem', '&:hover': { borderColor: 'warning.main', color: 'warning.main' } }}
                 >
                   List Your Property
@@ -69,7 +77,7 @@ const HomePage = () => {
               </Stack>
             </Grid>
           </Grid>
-          
+
         </Container>
       </Box>
 
@@ -137,12 +145,12 @@ const HomePage = () => {
         <Container maxWidth="lg">
           <Grid container spacing={6} sx={{ alignItems: 'center' }}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography 
-                variant="h2" 
-                sx={{ 
-                  fontWeight: 800, 
-                  mb: 3, 
-                  fontSize: { xs: '2.5rem', md: '3.5rem' }, 
+              <Typography
+                variant="h2"
+                sx={{
+                  fontWeight: 800,
+                  mb: 3,
+                  fontSize: { xs: '2.5rem', md: '3.5rem' },
                   lineHeight: 1.2,
                   textAlign: 'left'
                 }}
@@ -153,7 +161,7 @@ const HomePage = () => {
               <Typography variant="body1" sx={{ opacity: 0.9, mb: 4, fontSize: '1.1rem', lineHeight: 1.8 }}>
                 With over a decade of experience in Pune's real estate market, we have built a reputation for trust, transparency, and excellence. We don't just find you a house; we find you a home.
               </Typography>
-              
+
               <Stack spacing={3}>
                 {[
                   { title: 'Market Expertise', desc: 'Deep knowledge of Pune and PCMC localities and price trends.' },
@@ -161,13 +169,13 @@ const HomePage = () => {
                   { title: 'End-to-End Support', desc: 'From site visits to legal registration and home loan assistance.' }
                 ].map((item, i) => (
                   <Box key={i} sx={{ display: 'flex', gap: 2 }}>
-                    <Box sx={{ 
-                      width: 40, 
-                      height: 40, 
-                      borderRadius: '50%', 
-                      bgcolor: 'warning.main', 
-                      display: 'flex', 
-                      alignItems: 'center', 
+                    <Box sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      bgcolor: 'warning.main',
+                      display: 'flex',
+                      alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0
                     }}>
@@ -181,7 +189,7 @@ const HomePage = () => {
                 ))}
               </Stack>
             </Grid>
-            
+
             <Grid size={{ xs: 12, md: 6 }}>
               <Grid container spacing={2}>
                 {[
@@ -191,14 +199,14 @@ const HomePage = () => {
                   { label: 'Verified Listings', value: '250+' }
                 ].map((stat, i) => (
                   <Grid size={{ xs: 6 }} key={i}>
-                    <Paper sx={{ 
-                      p: 4, 
+                    <Paper sx={{
+                      p: 4,
                       height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'center',
-                      textAlign: 'center', 
-                      bgcolor: 'rgba(255,255,255,0.05)', 
+                      textAlign: 'center',
+                      bgcolor: 'rgba(255,255,255,0.05)',
                       backdropFilter: 'blur(10px)',
                       border: '1px solid rgba(255,255,255,0.1)',
                       color: 'white',
@@ -250,18 +258,21 @@ const HomePage = () => {
       </Box>
 
       {/* Sticky WhatsApp Button */}
-      <Box 
-        sx={{ 
-          position: 'fixed', 
-          bottom: 30, 
-          right: 30, 
-          zIndex: 1000 
+      <Box
+        sx={{
+          position: 'fixed',
+          bottom: 30,
+          right: 30,
+          zIndex: 1000
         }}
       >
         <Button
           variant="contained"
-          sx={{ 
-            bgcolor: '#25D366', 
+          component="a"
+          href="https://wa.me/919890468329"
+          target="_blank"
+          sx={{
+            bgcolor: '#25D366',
             borderRadius: '50px',
             p: '12px 24px',
             '&:hover': { bgcolor: '#128C7E' },

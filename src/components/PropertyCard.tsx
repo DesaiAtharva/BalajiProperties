@@ -13,14 +13,15 @@ import Link from 'next/link';
 export type Property = {
   id: string;
   title: string;
-  price: string;
+  price_display: string;
+  price_amount?: number;
   location: string;
   area: string;
-  type: string;
+  property_type: string;
   bhk: number;
   bathrooms: number;
   sqft: number;
-  image: string;
+  main_image: string;
   status: 'For Sale' | 'For Rent';
   featured?: boolean;
 };
@@ -44,7 +45,7 @@ const PropertyCard = ({ property }: { property: Property }) => {
         <CardMedia
           component="img"
           height="220"
-          image={property.image}
+          image={property.main_image || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800'}
           alt={property.title}
         />
         <Chip 
@@ -74,10 +75,10 @@ const PropertyCard = ({ property }: { property: Property }) => {
       <CardContent sx={{ flexGrow: 1, p: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
           <Typography variant="h6" component="div" sx={{ fontWeight: 700, fontSize: '1.25rem' }}>
-            {property.price}
+            {property.price_display}
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: 600, color: 'secondary.main' }}>
-            {property.type}
+            {property.property_type}
           </Typography>
         </Box>
 

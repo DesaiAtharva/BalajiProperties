@@ -13,7 +13,10 @@ import {
   Link as MuiLink,
   CircularProgress,
   Alert,
-  Snackbar
+  Snackbar,
+  FormGroup,
+  FormControlLabel,
+  Checkbox
 } from '@mui/material';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -86,26 +89,48 @@ const ListPropertyPage = () => {
 
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
+              {/* 1. Lister Information */}
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="h6" sx={{ color: 'primary.main', mb: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                  Lister Details
+                </Typography>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Your Name</Typography>
+                <TextField fullWidth name="lister_name" placeholder="John Doe" required />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Phone / WhatsApp</Typography>
+                <TextField fullWidth name="lister_phone" placeholder="9876543210" required />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>I am the...</Typography>
+                <TextField select fullWidth name="lister_role" defaultValue="Owner" required>
+                  <MenuItem value="Owner">Owner</MenuItem>
+                  <MenuItem value="Agent">Agent</MenuItem>
+                  <MenuItem value="Builder">Builder</MenuItem>
+                </TextField>
+              </Grid>
+
+              {/* 2. Property Basics */}
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="h6" sx={{ color: 'primary.main', mt: 3, mb: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                  Property Basics
+                </Typography>
+              </Grid>
               <Grid size={{ xs: 12 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Property Title</Typography>
-                <TextField 
-                  fullWidth 
-                  name="title" 
-                  placeholder="e.g. Luxury 3 BHK Apartment in Baner" 
-                  required 
-                />
+                <TextField fullWidth name="title" placeholder="e.g. Luxury 3 BHK Apartment in Baner" required />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Description</Typography>
+                <TextField fullWidth name="description" multiline rows={4} placeholder="Describe the property features, nearby landmarks, etc." required />
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Price</Typography>
-                <TextField 
-                  fullWidth 
-                  name="price" 
-                  placeholder="e.g. ₹1.2 Cr or ₹35,000 / mo" 
-                  required 
-                />
+                <TextField fullWidth name="price_display" placeholder="e.g. ₹1.2 Cr or ₹35,000 / mo" required />
               </Grid>
-
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Status</Typography>
                 <TextField select fullWidth name="status" defaultValue="For Sale" required>
@@ -113,7 +138,6 @@ const ListPropertyPage = () => {
                   <MenuItem value="For Rent">For Rent</MenuItem>
                 </TextField>
               </Grid>
-
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Property Type</Typography>
                 <TextField select fullWidth name="type" defaultValue="Apartment" required>
@@ -124,57 +148,92 @@ const ListPropertyPage = () => {
                 </TextField>
               </Grid>
 
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Location (e.g. Baner, Wakad)</Typography>
-                <TextField 
-                  fullWidth 
-                  name="location" 
-                  placeholder="Specific Area" 
-                  required 
-                />
+              {/* 3. Location */}
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="h6" sx={{ color: 'primary.main', mt: 3, mb: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                  Location Details
+                </Typography>
               </Grid>
-
               <Grid size={{ xs: 12, sm: 6 }}>
-                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Area (Pune or PCMC)</Typography>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Specific Area</Typography>
+                <TextField fullWidth name="location" placeholder="e.g. Baner" required />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Region</Typography>
                 <TextField select fullWidth name="area" defaultValue="Pune" required>
                   <MenuItem value="Pune">Pune</MenuItem>
                   <MenuItem value="PCMC">PCMC</MenuItem>
                 </TextField>
               </Grid>
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Full Address</Typography>
+                <TextField fullWidth name="address" placeholder="Flat No, Building, Society Name" />
+              </Grid>
 
-              <Grid size={{ xs: 12, sm: 2 }}>
+              {/* 4. Specifications */}
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="h6" sx={{ color: 'primary.main', mt: 3, mb: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                  Specifications
+                </Typography>
+              </Grid>
+              <Grid size={{ xs: 4 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>BHK</Typography>
-                <TextField 
-                  fullWidth 
-                  name="bhk" 
-                  type="number" 
-                  defaultValue={2} 
-                  required 
-                />
+                <TextField fullWidth name="bhk" type="number" defaultValue={2} required />
               </Grid>
-
-              <Grid size={{ xs: 12, sm: 2 }}>
+              <Grid size={{ xs: 4 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Baths</Typography>
-                <TextField 
-                  fullWidth 
-                  name="bathrooms" 
-                  type="number" 
-                  defaultValue={2} 
-                  required 
-                />
+                <TextField fullWidth name="bathrooms" type="number" defaultValue={2} required />
               </Grid>
-
-              <Grid size={{ xs: 12, sm: 2 }}>
+              <Grid size={{ xs: 4 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Sq.Ft</Typography>
-                <TextField 
-                  fullWidth 
-                  name="sqft" 
-                  type="number" 
-                  placeholder="1200" 
-                  required 
-                />
+                <TextField fullWidth name="sqft" type="number" placeholder="1200" required />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Furnishing</Typography>
+                <TextField select fullWidth name="furnishing_status" defaultValue="Unfurnished" required>
+                  <MenuItem value="Unfurnished">Unfurnished</MenuItem>
+                  <MenuItem value="Semi-furnished">Semi-furnished</MenuItem>
+                  <MenuItem value="Fully-furnished">Fully-furnished</MenuItem>
+                </TextField>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Facing</Typography>
+                <TextField select fullWidth name="facing" defaultValue="East">
+                  <MenuItem value="East">East</MenuItem>
+                  <MenuItem value="West">West</MenuItem>
+                  <MenuItem value="North">North</MenuItem>
+                  <MenuItem value="South">South</MenuItem>
+                </TextField>
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Floor No.</Typography>
+                <TextField fullWidth name="floor_number" type="number" />
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Total Floors</Typography>
+                <TextField fullWidth name="total_floors" type="number" />
               </Grid>
 
+              {/* 5. Amenities */}
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="h6" sx={{ color: 'primary.main', mt: 3, mb: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                  Amenities
+                </Typography>
+                <FormGroup row>
+                  <FormControlLabel control={<Checkbox name="has_parking" />} label="Parking" />
+                  <FormControlLabel control={<Checkbox name="has_lift" />} label="Lift" />
+                  <FormControlLabel control={<Checkbox name="has_power_backup" />} label="Power Backup" />
+                  <FormControlLabel control={<Checkbox name="has_gym" />} label="Gym" />
+                  <FormControlLabel control={<Checkbox name="has_security" />} label="Security" />
+                  <FormControlLabel control={<Checkbox name="has_swimming_pool" />} label="Swimming Pool" />
+                </FormGroup>
+              </Grid>
+              
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="h6" sx={{ color: 'primary.main', mt: 3, mb: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                  Media
+                </Typography>
+              </Grid>
               <Grid size={{ xs: 12 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Property Image</Typography>
                 <Button
@@ -200,17 +259,13 @@ const ListPropertyPage = () => {
                     name="image"
                     hidden
                     accept="image/*"
-                    required
                     onChange={handleFileChange}
                   />
                 </Button>
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block', textAlign: 'center' }}>
-                  Supported formats: JPG, PNG, WEBP
-                </Typography>
               </Grid>
 
               <Grid size={{ xs: 12 }}>
-                <Box sx={{ mt: 2 }}>
+                <Box sx={{ mt: 4 }}>
                   <Button 
                     type="submit" 
                     variant="contained" 
@@ -219,10 +274,11 @@ const ListPropertyPage = () => {
                     disabled={loading}
                     sx={{ py: 2, fontWeight: 700, fontSize: '1.1rem' }}
                   >
-                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Submit Listing'}
+                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Submit Listing for Review'}
                   </Button>
                 </Box>
               </Grid>
+
             </Grid>
           </form>
         </Paper>

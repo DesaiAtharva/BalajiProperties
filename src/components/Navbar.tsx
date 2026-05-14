@@ -8,13 +8,13 @@ const pages = [
   { name: 'Home', path: '/' },
   { name: 'Properties', path: '/properties' },
   { name: 'Services', path: '/#services' },
-  { name: 'About Us', path: '/#about' },
-  { name: 'Contact', path: '/#contact' },
+  { name: 'About Us', path: '/about' },
+  { name: 'Contact', path: '/contact' },
 ];
 
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-  
+
   // Mobile menu states
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -131,23 +131,22 @@ const Navbar = () => {
             ))}
           </Box>
 
-          {/* Contact Button */}
           <Box sx={{ flexGrow: 0 }}>
             <Button
               variant="contained"
               startIcon={<PhoneIcon />}
               component="a"
               href="tel:9890468329"
-              sx={{ 
-                backgroundColor: 'warning.main', 
+              sx={{
+                backgroundColor: 'warning.main',
                 '&:hover': { backgroundColor: '#B89240' },
                 display: { xs: 'none', sm: 'flex' }
               }}
             >
               9890468329
             </Button>
-            <IconButton 
-              component="a" 
+            <IconButton
+              component="a"
               href="tel:9890468329"
               sx={{ display: { xs: 'flex', sm: 'none' }, color: 'warning.main' }}
             >
