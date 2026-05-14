@@ -96,19 +96,19 @@ const EditPropertyPage = () => {
           {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
           
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField 
                 fullWidth label="Property Title" name="title" 
                 value={formData.title || ''} onChange={handleChange} required 
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField 
                 fullWidth label="Price (in Rupees)" name="price" type="number"
                 value={formData.price || ''} onChange={handleChange} required 
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField 
                 fullWidth select label="Status" name="status"
                 value={formData.status || 'For Sale'} onChange={handleChange}
@@ -118,31 +118,31 @@ const EditPropertyPage = () => {
                 <MenuItem value="Sold">Sold</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <TextField 
                 fullWidth label="BHK" name="bhk" type="number"
                 value={formData.bhk || ''} onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <TextField 
                 fullWidth label="Bathrooms" name="bathrooms" type="number"
                 value={formData.bathrooms || ''} onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <TextField 
                 fullWidth label="Area (sq ft)" name="area" type="number"
                 value={formData.area || ''} onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField 
                 fullWidth label="Location" name="location"
                 value={formData.location || ''} onChange={handleChange} required 
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField 
                 fullWidth multiline rows={4} label="Description" name="description"
                 value={formData.description || ''} onChange={handleChange}
