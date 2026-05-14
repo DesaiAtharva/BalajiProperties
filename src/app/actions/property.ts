@@ -1,7 +1,7 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 
-const DJANGO_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://balajiproperties-backend.onrender.com';
+const DJANGO_API_URL = 'https://balajiproperties-backend.onrender.com';
 
 function parsePrice(priceStr: string): number {
     if (!priceStr) return 0;
