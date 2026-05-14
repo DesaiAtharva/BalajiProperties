@@ -30,15 +30,18 @@ const PropertyCard = ({ property }: { property: Property }) => {
   const getImageUrl = (url: string | null) => {
     if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
     
-    // Check for web links anywhere in the path
+    // PRECISION FIX: If the backend prepended /media/ to an external link
+    if (url.startsWith('/media/http')) {
+      return decodeURIComponent(url.substring(7)).replace('https:/', 'https://').replace('http:/', 'http://');
+    }
+
+    // Check for web links anywhere else
     const httpIndex = url.indexOf('http');
     if (httpIndex !== -1) {
-      // Extract the real link, decode it, and fix slashes
       let realUrl = decodeURIComponent(url.substring(httpIndex));
       return realUrl.replace('https:/', 'https://').replace('http:/', 'http://').replace('https:///','https://');
     }
     
-    // For normal uploaded files
     return `https://balajiproperties-backend.onrender.com${url}`;
   };
 

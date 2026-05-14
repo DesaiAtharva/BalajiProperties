@@ -93,6 +93,12 @@ const PropertyDetailPage = () => {
                 src={(() => {
                   const url = property.main_image;
                   if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
+                  
+                  // Precision Fix for /media/http
+                  if (url.startsWith('/media/http')) {
+                    return decodeURIComponent(url.substring(7)).replace('https:/', 'https://').replace('http:/', 'http://');
+                  }
+
                   const httpIndex = url.indexOf('http');
                   if (httpIndex !== -1) {
                     let realUrl = decodeURIComponent(url.substring(httpIndex));
