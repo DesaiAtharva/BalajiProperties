@@ -159,7 +159,7 @@ const HomePage = () => {
                 <Box component="span" sx={{ color: 'warning.main' }}>Balaji Properties</Box>?
               </Typography>
               <Typography variant="body1" sx={{ opacity: 0.9, mb: 4, fontSize: '1.1rem', lineHeight: 1.8 }}>
-                With over a decade of experience in Pune's real estate market, we have built a reputation for trust, transparency, and excellence. We don't just find you a house; we find you a home.
+                With over a year of dedicated experience in Pune's real estate market, we have quickly built a reputation for trust, transparency, and excellence. We don't just find you a house; we find you a home.
               </Typography>
 
               <Stack spacing={3}>
@@ -193,10 +193,10 @@ const HomePage = () => {
             <Grid size={{ xs: 12, md: 6 }}>
               <Grid container spacing={2}>
                 {[
-                  { label: 'Years Experience', value: '10+' },
-                  { label: 'Properties Sold', value: '500+' },
-                  { label: 'Happy Families', value: '1000+' },
-                  { label: 'Verified Listings', value: '250+' }
+                  { label: 'Year Experience', value: '1+' },
+                  { label: 'Properties Sold', value: '25+' },
+                  { label: 'Happy Customers', value: '30+' },
+                  { label: 'Verified Listings', value: '50+' }
                 ].map((stat, i) => (
                   <Grid size={{ xs: 6 }} key={i}>
                     <Paper sx={{
