@@ -191,7 +191,6 @@ const AdminPropertiesPage = () => {
         onClose={() => setViewDialogOpen(false)}
         maxWidth="md"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
       >
         {selectedProperty && (
           <>
