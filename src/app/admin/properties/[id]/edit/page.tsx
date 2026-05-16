@@ -148,6 +148,34 @@ const EditPropertyPage = () => {
                 value={formData.description || ''} onChange={handleChange}
               />
             </Grid>
+
+            {/* Existing Images Display */}
+            <Grid size={{ xs: 12 }}>
+              <Typography variant="h6" sx={{ mt: 3, mb: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                Existing Gallery
+              </Typography>
+              <Grid container spacing={2}>
+                {formData.main_image && (
+                  <Grid size={{ xs: 6, sm: 4, md: 3 }}>
+                    <Box sx={{ border: '1px solid #ddd', borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
+                      <img src={formData.main_image} alt="Main" style={{ width: '100%', height: 120, objectFit: 'cover' }} />
+                      <Typography variant="caption" sx={{ p: 0.5, display: 'block', textAlign: 'center', bgcolor: '#f8f9fa' }}>Main / Hero</Typography>
+                    </Box>
+                  </Grid>
+                )}
+                {formData.images?.map((img: any, idx: number) => (
+                  <Grid size={{ xs: 6, sm: 4, md: 3 }} key={idx}>
+                    <Box sx={{ border: '1px solid #ddd', borderRadius: 2, overflow: 'hidden' }}>
+                      <img src={img.url} alt="Gallery" style={{ width: '100%', height: 120, objectFit: 'cover' }} />
+                      <Typography variant="caption" sx={{ p: 0.5, display: 'block', textAlign: 'center', bgcolor: '#f8f9fa' }}>{img.category}</Typography>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+              {(!formData.main_image && (!formData.images || formData.images.length === 0)) && (
+                <Typography variant="body2" color="text.secondary">No images uploaded for this property.</Typography>
+              )}
+            </Grid>
           </Grid>
 
           <Box sx={{ mt: 4, display: 'flex', gap: 2 }}>

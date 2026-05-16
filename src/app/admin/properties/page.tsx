@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { 
   Box, Container, Typography, Paper, Table, TableBody, 
   TableCell, TableContainer, TableHead, TableRow, Button, 
-  Chip, IconButton, Stack, CircularProgress, Alert
+  Chip, IconButton, Stack, CircularProgress, Alert,
+  Dialog, DialogTitle, DialogContent, DialogActions, Grid
 } from '@mui/material';
 import { 
   CheckCircle as CheckIcon, 
@@ -74,6 +75,14 @@ const AdminPropertiesPage = () => {
     }
   };
 
+  const [selectedProperty, setSelectedProperty] = useState<any>(null);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+
+  const handleView = (prop: any) => {
+    setSelectedProperty(prop);
+    setViewDialogOpen(true);
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#F8F9FA' }}>
       <Navbar />
@@ -140,6 +149,13 @@ const AdminPropertiesPage = () => {
                     <TableCell sx={{ textAlign: 'right' }}>
                       <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
                         <IconButton 
+                          color="info" 
+                          size="small"
+                          onClick={() => handleView(prop)}
+                        >
+                          <ViewIcon />
+                        </IconButton>
+                        <IconButton 
                           component={Link} 
                           href={`/admin/properties/${prop.id}/edit`}
                           color="primary" 
@@ -168,6 +184,78 @@ const AdminPropertiesPage = () => {
           </TableContainer>
         )}
       </Container>
+
+      {/* View Details Dialog */}
+      <Dialog 
+        open={viewDialogOpen} 
+        onClose={() => setViewDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3 } }}
+      >
+        {selectedProperty && (
+          <>
+            <DialogTitle sx={{ fontWeight: 800, bgcolor: '#f8f9fa' }}>
+              {selectedProperty.title}
+            </DialogTitle>
+            <DialogContent dividers>
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Main Details</Typography>
+                  <Typography variant="body1"><b>Price:</b> {selectedProperty.price_display}</Typography>
+                  <Typography variant="body1"><b>Location:</b> {selectedProperty.location}, {selectedProperty.area}</Typography>
+                  <Typography variant="body1"><b>Type:</b> {selectedProperty.property_type}</Typography>
+                  <Typography variant="body1"><b>Specs:</b> {selectedProperty.bhk} BHK, {selectedProperty.bathrooms} Baths, {selectedProperty.sqft} sqft</Typography>
+                  <Typography variant="body1"><b>Furnishing:</b> {selectedProperty.furnishing_status}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Lister Information</Typography>
+                  <Typography variant="body1"><b>Name:</b> {selectedProperty.lister_name}</Typography>
+                  <Typography variant="body1"><b>Phone:</b> {selectedProperty.lister_phone}</Typography>
+                  <Typography variant="body1"><b>Role:</b> {selectedProperty.lister_role}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Description</Typography>
+                  <Typography variant="body2">{selectedProperty.description}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>Gallery</Typography>
+                  <Grid container spacing={1}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
+                      <Box sx={{ border: '1px solid #ddd', borderRadius: 1, overflow: 'hidden' }}>
+                        <img src={selectedProperty.main_image} style={{ width: '100%', height: 150, objectFit: 'cover' }} />
+                        <Typography variant="caption" sx={{ p: 0.5, display: 'block', textAlign: 'center' }}>Hero Image</Typography>
+                      </Box>
+                    </Grid>
+                    {selectedProperty.images?.map((img: any, idx: number) => (
+                      <Grid size={{ xs: 6, sm: 3 }} key={idx}>
+                        <Box sx={{ border: '1px solid #ddd', borderRadius: 1, overflow: 'hidden' }}>
+                          <img src={img.url} style={{ width: '100%', height: 100, objectFit: 'cover' }} />
+                          <Typography variant="caption" sx={{ p: 0.5, display: 'block', textAlign: 'center' }}>{img.category}</Typography>
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions sx={{ p: 2, bgcolor: '#f8f9fa' }}>
+              <Button onClick={() => setViewDialogOpen(false)} variant="outlined">Close</Button>
+              <Button 
+                onClick={() => {
+                  handleAction(selectedProperty.id, 'approve');
+                  setViewDialogOpen(false);
+                }}
+                variant="contained" 
+                color={selectedProperty.is_approved ? "warning" : "success"}
+              >
+                {selectedProperty.is_approved ? 'Hide Property' : 'Approve Now'}
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+
       <Footer />
     </Box>
   );
