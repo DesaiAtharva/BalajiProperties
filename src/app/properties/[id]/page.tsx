@@ -55,6 +55,12 @@ const PropertyDetailPage = () => {
     );
   }
 
+  // Combine main_image with other images for the gallery
+  const gallery = [
+    ...(property.main_image ? [{ url: property.main_image, category: 'Main' }] : []),
+    ...(property.images || [])
+  ];
+
   const amenities = [
     '24/7 Security', 'Power Backup', 'Gated Community', 'Reserved Parking',
     'Swimming Pool', 'Gymnasium', 'Rain Water Harvesting', 'Intercom Facility'
@@ -87,30 +93,59 @@ const PropertyDetailPage = () => {
         <Grid container spacing={6}>
           {/* Main Content */}
           <Grid size={{ xs: 12, md: 8 }}>
-            {/* Gallery placeholder */}
-            <Box sx={{ borderRadius: 4, overflow: 'hidden', mb: 6, boxShadow: 10 }}>
-              <img 
-                src={(() => {
-                  const url = property.main_image;
-                  if (!url) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
-                  
-                  // 1. Handle nested external URLs
-                  const lastHttpIndex = url.lastIndexOf('http');
-                  if (lastHttpIndex > 0) {
-                    let realUrl = decodeURIComponent(url.substring(lastHttpIndex));
-                    return realUrl.replace(/https:\/+(?!\/)/g, 'https://').replace(/http:\/+(?!\/)/g, 'http://');
-                  }
-                  
-                  // 2. Direct Web Links
-                  if (url.startsWith('http')) return url;
+          {/* Modern Image Carousel */}
+        <Paper 
+          elevation={0} 
+          sx={{ 
+            borderRadius: 4, 
+            overflow: 'hidden', 
+            mb: 4, 
+            position: 'relative', 
+            height: { xs: 300, md: 550 },
+            border: '1px solid #eee'
+          }}
+        >
+           <Box 
+            sx={{ 
+              display: 'flex', 
+              height: '100%', 
+              overflowX: 'auto', 
+              scrollSnapType: 'x mandatory', 
+              '&::-webkit-scrollbar': { display: 'none' },
+              cursor: 'grab'
+            }}
+           >
+              {gallery.map((img: any, idx: number) => (
+                <Box 
+                  key={idx} 
+                  sx={{ 
+                    flex: '0 0 100%', 
+                    height: '100%', 
+                    scrollSnapAlign: 'start',
+                    position: 'relative'
+                  }}
+                >
+                  <img
+                    src={img.url}
+                    alt={`${property.title} - ${img.category}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <Box sx={{ position: 'absolute', bottom: 20, right: 20, bgcolor: 'rgba(0,0,0,0.7)', color: 'white', px: 2, py: 1, borderRadius: 2, fontSize: '0.85rem', fontWeight: 600 }}>
+                    {idx + 1} / {gallery.length} • {img.category}
+                  </Box>
+                </Box>
+              ))}
+           </Box>
+           
+           <Box sx={{ position: 'absolute', top: 20, left: 20, display: 'flex', gap: 1 }}>
+            <Chip label={property.status} color="primary" sx={{ fontWeight: 700, px: 1 }} />
+            <Chip label={property.property_type} sx={{ bgcolor: 'white', fontWeight: 700, px: 1 }} />
+           </Box>
 
-                  // 3. Relative Paths
-                  return `https://balajiproperties-backend.onrender.com${url.startsWith('/') ? '' : '/'}${url}`;
-                })()} 
-                alt={property.title} 
-                style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '500px', objectFit: 'cover' }} 
-              />
-            </Box>
+           <Typography variant="caption" sx={{ position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)', color: 'white', opacity: 0.8, fontWeight: 500, bgcolor: 'rgba(0,0,0,0.3)', px: 2, borderRadius: 10 }}>
+             Swipe to see tour →
+           </Typography>
+        </Paper>
 
             {/* Quick Stats */}
             <Grid container spacing={2} sx={{ mb: 6 }}>

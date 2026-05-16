@@ -29,14 +29,11 @@ const ListPropertyPage = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setFileName(file.name);
-    }
-  };
+  const [buckets, setBuckets] = useState<Record<string, File[]>>({
+    interior: [],
+    exterior: [],
+    amenities: []
+  });
 
   const compressImage = (file: File): Promise<Blob> => {
     return new Promise((resolve, reject) => {
@@ -51,26 +48,16 @@ const ListPropertyPage = () => {
           const MAX_HEIGHT = 1200;
           let width = img.width;
           let height = img.height;
-
           if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
+            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
           } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
+            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
           }
-
-          canvas.width = width;
-          canvas.height = height;
+          canvas.width = width; canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx?.drawImage(img, 0, 0, width, height);
           canvas.toBlob((blob) => {
-            if (blob) resolve(blob);
-            else reject(new Error('Canvas to Blob failed'));
+            if (blob) resolve(blob); else reject(new Error('Canvas to Blob failed'));
           }, 'image/jpeg', 0.7);
         };
       };
@@ -78,22 +65,50 @@ const ListPropertyPage = () => {
     });
   };
 
+  const handleBucketChange = (category: string, files: FileList | null) => {
+    if (!files) return;
+    const newFiles = Array.from(files);
+    setBuckets(prev => ({
+      ...prev,
+      [category]: [...prev[category], ...newFiles]
+    }));
+  };
+
+  const removeImage = (category: string, index: number) => {
+    setBuckets(prev => ({
+      ...prev,
+      [category]: prev[category].filter((_, i) => i !== index)
+    }));
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
+    // Validate total count
+    const totalPhotos = Object.values(buckets).flat().length;
+    const propertyType = (new FormData(event.currentTarget)).get('type') as string;
+    
+    if (propertyType !== 'Plot' && totalPhotos < 10) {
+      setError('Production Requirement: Please provide at least 10 photos to ensure a high-quality listing.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     const formElement = event.currentTarget;
     const formData = new FormData(formElement);
     
-    // Compress image if present
-    const imageFile = formData.get('image') as File;
-    if (imageFile && imageFile.size > 0) {
-      try {
-        const compressedBlob = await compressImage(imageFile);
-        formData.set('image', compressedBlob, imageFile.name);
-      } catch (err) {
-        console.error('Compression failed:', err);
+    // Process and Compress all images in buckets
+    for (const [category, files] of Object.entries(buckets)) {
+      for (let i = 0; i < files.length; i++) {
+        try {
+          const compressed = await compressImage(files[i]);
+          formData.append(`img_${category}_${i}`, compressed, files[i].name);
+        } catch (err) {
+          console.error(`Failed to compress ${category} image ${i}:`, err);
+          formData.append(`img_${category}_${i}`, files[i]);
+        }
       }
     }
 
@@ -102,7 +117,7 @@ const ListPropertyPage = () => {
       
       if (result.success) {
         setSuccess(true);
-        setFileName(null);
+        setBuckets({ interior: [], exterior: [], amenities: [] });
         formElement.reset();
       } else {
         setError(result.error || 'Failed to list property. Please try again.');
@@ -283,39 +298,77 @@ const ListPropertyPage = () => {
               </Grid>
               
               <Grid size={{ xs: 12 }}>
-                <Typography variant="h6" sx={{ color: 'primary.main', mt: 3, mb: 2, borderBottom: '1px solid #eee', pb: 1 }}>
-                  Media
+                <Typography variant="h6" sx={{ color: 'primary.main', mt: 3, mb: 1, borderBottom: '1px solid #eee', pb: 1 }}>
+                  Property Gallery (Min. 10 Photos)
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 3 }}>
+                  High-quality photos increase your chances of a quick sale by 3x. Please provide a full tour.
                 </Typography>
               </Grid>
-              <Grid size={{ xs: 12 }}>
-                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Property Image</Typography>
-                <Button
-                  component="label"
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<CloudUploadIcon />}
-                  sx={{ 
-                    py: 4, 
-                    borderStyle: 'dashed', 
-                    color: fileName ? 'primary.main' : 'text.secondary',
-                    borderColor: fileName ? 'primary.main' : 'divider',
-                    bgcolor: fileName ? 'rgba(47, 72, 88, 0.05)' : 'transparent',
-                    '&:hover': {
-                      borderColor: 'primary.main',
-                      bgcolor: 'rgba(0,0,0,0.02)'
-                    }
-                  }}
-                >
-                  {fileName ? fileName : 'Upload Image'}
-                  <input
-                    type="file"
-                    name="image"
-                    hidden
-                    accept="image/*"
-                    onChange={handleFileChange}
-                  />
-                </Button>
-              </Grid>
+
+              {/* Photo Buckets */}
+              {[
+                { id: 'interior', label: 'Interior Photos', desc: 'Living, Bed, Kitchen (Min 4)', min: 4 },
+                { id: 'exterior', label: 'Exterior Photos', desc: 'Facade, View, Parking (Min 2)', min: 2 },
+                { id: 'amenities', label: 'Amenities', desc: 'Pool, Gym, Garden (Min 3)', min: 3, optional: true },
+              ].map((bucket) => (
+                <Grid size={{ xs: 12 }} key={bucket.id}>
+                  <Box sx={{ mb: 3, p: 3, border: '1px dashed #ccc', borderRadius: 3, bgcolor: '#fcfcfc' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                      <Box>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{bucket.label}</Typography>
+                        <Typography variant="caption" color="text.secondary">{bucket.desc}</Typography>
+                      </Box>
+                      <Button
+                        component="label"
+                        variant="outlined"
+                        size="small"
+                        startIcon={<CloudUploadIcon />}
+                      >
+                        Add Photos
+                        <input
+                          type="file"
+                          multiple
+                          hidden
+                          accept="image/*"
+                          onChange={(e) => handleBucketChange(bucket.id, e.target.files)}
+                        />
+                      </Button>
+                    </Box>
+                    
+                    {/* Thumbnail Previews */}
+                    <Grid container spacing={1}>
+                      {buckets[bucket.id].map((file, idx) => (
+                        <Grid size={{ xs: 3, sm: 2 }} key={idx}>
+                          <Box sx={{ position: 'relative', pt: '100%', borderRadius: 1, overflow: 'hidden', border: '1px solid #ddd' }}>
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt="Preview"
+                              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                            <Button
+                              onClick={() => removeImage(bucket.id, idx)}
+                              sx={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                                minWidth: 20,
+                                p: 0,
+                                bgcolor: 'rgba(0,0,0,0.5)',
+                                color: 'white',
+                                borderRadius: 0,
+                                '&:hover': { bgcolor: 'error.main' }
+                              }}
+                            >
+                              ×
+                            </Button>
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                </Grid>
+              ))}
 
               <Grid size={{ xs: 12 }}>
                 <Box sx={{ mt: 4 }}>

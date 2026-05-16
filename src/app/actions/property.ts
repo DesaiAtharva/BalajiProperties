@@ -22,13 +22,19 @@ export async function addProperty(formData: FormData) {
     try {
         console.log('--- Property Submission Started ---');
         
-        // 1. Map fields to match Django model
-        const image = formData.get('image');
-        if (image && image instanceof File) {
-            console.log('Processing image:', image.name, 'Size:', image.size);
-            formData.append('main_image', image);
-            formData.delete('image');
+        // 1. Handle Main Image
+        const mainImage = formData.get('main_image');
+        if (!mainImage || (mainImage instanceof File && mainImage.size === 0)) {
+            const firstInterior = formData.get('images_interior_0');
+            if (firstInterior) {
+                formData.append('main_image', firstInterior);
+                console.log('Using first interior as main image');
+            }
         }
+
+        // 2. Map and Process all images from buckets
+        // This will be handled by the form now, we just need to ensure the keys match what Django expects
+        // (Handled in the UI component now)
 
         const priceStr = formData.get('price_display') as string;
         const priceAmount = parsePrice(priceStr);
